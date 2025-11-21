@@ -1,7 +1,6 @@
 package storage
 
 import (
-//	"fmt"
 	"errors"
 	"sync"
 	"go18_api/internal/models"
@@ -12,11 +11,12 @@ type StorageData struct{
 
 var mu sync.RWMutex
 var data []models.Task = make([]models.Task, 0, 10)
+var seq_task_id int = 0;
 
 // Конструктор
-func NewStorageData() StorageData {
+func NewStorageData() Storage {
 	d := StorageData{}
-	return d;
+	return &d;
 }
 
 func getIndex(id int) int {
@@ -37,7 +37,10 @@ func (d StorageData) List() []models.Task {
 	mu.RLock()
 	defer mu.RUnlock()
 
-	return data
+	data2 := make([]models.Task, len(data)) 
+	copy(data2, data)
+
+	return data2
 }
 
 func (d StorageData) Get(id int) (models.Task, bool) {
@@ -57,10 +60,11 @@ func (d StorageData) Create(task models.Task) (models.Task, error) {
 	mu.Lock()
 	defer mu.Unlock()
 
-	task.ID = len(data) + 1
+	seq_task_id++
+	task.ID = seq_task_id
 	data = append(data, task)
 
-	return task, nil
+	return data[len(data) - 1], nil
 }
 
 func (d StorageData) Delete(id int) error {
@@ -88,6 +92,6 @@ func (d StorageData) Update(id int, value models.Task) (models.Task, error) {
 	} else {
 		data[index].Title = value.Title
 		data[index].Done = value.Done
-		return value, nil
+		return data[index], nil
 	}
 }

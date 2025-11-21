@@ -8,9 +8,7 @@ import (
 )
 
 func main() {
-	// TODO: подключите конкретную реализацию (in‑memory) интерфейса Storage
-	// var store storage.Storage // = memory.New() // реализуйте сами
-	var store storage.StorageData = storage.NewStorageData()
+	var store storage.Storage = storage.NewStorageData()
 
 	h := handlers.New(store)
 
